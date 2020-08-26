@@ -1,0 +1,14 @@
+ASONMODE: "&aOn"
+ASOFFMODE: "&cOff"
+StartUpDelay: 10
+MinUpdateDelay: 250
+Scoreboard:
+  Title: "&aFutureRealms"
+  Items:
+    - "%PLAYERNAME%"
+    - "%PLAYERSONLINE%"
+    - "%MAXPLAYERS%"
+    - "%BALANCE%"
+    - "%INGAMETIME%"
+    - "%DAYORNIGHT%"
+    - "%RANK%"

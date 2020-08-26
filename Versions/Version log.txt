@@ -1,0 +1,25 @@
+CustomScoreboards 2.4:
+	*Fixed: error whilst getting ranks (again)
+	#Now has maven support
+
+CustomScoreboards 2.3:
+	*Fixed: Error when getting ranks
+	*Modified: The way to check for rankups.
+
+CustomScoreboards 2.2:
+	*Added: AutoChecking for an updated version. (If a player with sc.version logs in it will notify them if the version isnt upto date)
+	*Modified: /sc Version (it now tells you if your using the latest version or not (Along with what the version is))
+
+CustomScoreboards 2.1:
+	*Fixed: Lag issues, Optimization Update. (Updating scoreboards instead of recreating, Adding queue system)
+	*Added: /sc Version (Displays the current version of the plugin)
+	*Added: sc.version (Permission to use /sc version, players with sc.reloadconfig can also use this command by default.)
+	*Added: MinUpdateDelay to config, This is the minimum interval time between each time (In milliseconds) the scoreboard is updated. Default is 250 (4 times a second)
+	*Note: when trying to update whilst the delay has not passed, players will be queued for an update.
+
+CustomScoreboards 2.0:
+	*Fixed: Lag issues, Optimization Update. (MultiThread.)
+	*Added: StartUpelay to config, The time (In Seconds) between the plugin being enabled and starting its automatic work. Default is 10 (10 seconds)
+
+CustomScoreboards 1.2:
+	*Unknown, Version log was created after this update, all further updates will be logged

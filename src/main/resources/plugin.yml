@@ -1,0 +1,19 @@
+name: CustomScoreboards
+version: 2.4
+main: me.legendaryzotar.customscoreboards.CustomScoreboards
+depend: [Essentials, Vault]
+author: Legendary_zotar
+description: a plugin for custom scoreboards
+permissions:
+  sc.reloadconfig:
+    default: op
+    description: Allows user to reload config
+  sc.version:
+    default: op
+commands:
+  sc:
+    usage: /sc [toggle/reload]
+    description: Use to toggle or reload config for custom scoreboards
+  unistevenisawesome:
+    usage: /unistevenisawesome
+    description: An easter egg command and reference to old FR
