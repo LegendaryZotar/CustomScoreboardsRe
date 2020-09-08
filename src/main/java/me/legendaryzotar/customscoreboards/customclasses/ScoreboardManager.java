@@ -1,14 +1,13 @@
 package me.legendaryzotar.customscoreboards.customclasses;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.legendaryzotar.autosellmode.AutoSellMode;
 import me.legendaryzotar.customscoreboards.CustomScoreboards;
 import me.legendaryzotar.customscoreboards.other.Utils;
-import me.legendaryzotar.customscoreboards.other.Vault;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
-import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -22,16 +21,20 @@ public class ScoreboardManager {
 
     private static ScoreboardManager _instance = null;
 
-    public ScoreboardManager() { this.plugin = CustomScoreboards.getInstance(); Setup(); }
+    public ScoreboardManager() {
+        this.plugin = CustomScoreboards.getInstance();
+        Setup();
+    }
 
     public static List<Player> players = Collections.synchronizedList(new ArrayList<>());
 
-    public static ScoreboardManager Instance(){
-        if(_instance == null){
+    public static ScoreboardManager Instance() {
+        if (_instance == null) {
             _instance = new ScoreboardManager();
         }
         return _instance;
     }
+
     private static CustomScoreboards plugin = null;
 
     public static ConcurrentHashMap<UUID, LocalDateTime> LastUsed = new ConcurrentHashMap<>();
@@ -69,20 +72,16 @@ public class ScoreboardManager {
     static String title = "";
     static int PlayersOnline = 0;
     static int MaxPlayers = 0;
-    public static ConcurrentHashMap<UUID, String> Balances = new ConcurrentHashMap<>();
     static String ASOn = "";
     static String ASOff = "";
     static boolean AutoSell = false;
     public static int minDelay = 250;
 
     public static void createScoreboard(Player p, boolean updateAfter) {
-        ScoreboardManager.Balances.put(p.getUniqueId(), ScoreboardManager.GetBalance(p, Vault.getEconomy().getBalance(p)));
         Scoreboard board = getServer().getScoreboardManager().getNewScoreboard();
         String playerName = p.getName();
-        String rank = getRank(p);
-        String balance = Balances.get(p.getUniqueId());
         boolean isOn = false;
-        if(AutoSell)
+        if (AutoSell)
             isOn = AutoSellIsOn(p);
         boolean finalIsOn = isOn;
 
@@ -94,13 +93,21 @@ public class ScoreboardManager {
             String maxPlayers = MaxPlayers + "";
 
             for (String rawScore : scores) {
-                String fScore = rawScore.replace("%PLAYERNAME%", playerName).replace("%PLAYERSONLINE%", playersOnline).replace("%MAXPLAYERS%", maxPlayers)
-                        .replace("%BALANCE%", balance).replace("%RANK%", rank);
-                if(AutoSell) {
-                    if(finalIsOn){
+                String fScore = rawScore;
+                if (AutoSell) {
+                    if (finalIsOn) {
                         fScore = fScore.replace("%ASMODE%", ASOn);
-                    }else
+                    } else
                         fScore = fScore.replace("%ASMODE%", ASOff);
+                }
+                if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+                    try {
+                        fScore = PlaceholderAPI.setPlaceholders(p, fScore);
+                    } catch (Exception e) {
+                        if (!(e instanceof NullPointerException)) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
                 int index = scores.indexOf(rawScore);
                 Team cur = board.registerNewTeam(index + "");
@@ -112,19 +119,19 @@ public class ScoreboardManager {
             getServer().getScheduler().scheduleSyncDelayedTask(CustomScoreboards.getInstance(), () -> {
                 p.setScoreboard(board);
                 LastUsed.put(p.getUniqueId(), LocalDateTime.now());
-                if(updateAfter)
+                if (updateAfter)
                     scoreBoardUpdater();
-            },1L);
+            }, 1L);
             ScoreboardManager.players.add(p);
         });
     }
 
-    static void QueueUpdate(Player p){
-        if(!QueuedUpdates.contains(p)) {
+    static void QueueUpdate(Player p) {
+        if (!QueuedUpdates.contains(p)) {
             LocalDateTime lastUsed = LastUsed.get(p.getUniqueId());
             QueuedUpdates.add(p);
             Bukkit.getScheduler().scheduleSyncDelayedTask(CustomScoreboards.getInstance(), () -> {
-                if(QueuedUpdates.contains(p)) {
+                if (QueuedUpdates.contains(p)) {
                     UpdateScoreboard(p, true);
                     QueuedUpdates.remove(p);
                 }
@@ -136,7 +143,7 @@ public class ScoreboardManager {
     public static void UpdateScoreboard(Player p, boolean queued) {
         UUID id = p.getUniqueId();
         if (LastUsed.containsKey(p.getUniqueId())) {
-            if(!queued) {
+            if (!queued) {
                 if (!(Duration.between(LastUsed.get(id), LocalDateTime.now()).toMillis() >= minDelay)) {
                     QueueUpdate(p);
                     return;
@@ -145,25 +152,28 @@ public class ScoreboardManager {
         }
 
         Scoreboard board = p.getScoreboard();
-        String playerName = p.getName() + "";
-        String rank = getRank(p) + "";
         boolean isOn = false;
         if (AutoSell)
             isOn = AutoSellIsOn(p);
         boolean finalIsOn = isOn;
 
         Bukkit.getScheduler().runTaskAsynchronously(CustomScoreboards.getInstance(), () -> {
-            String balance = Balances.get(id) + "";
-            String playersOnline = PlayersOnline + "";
-            String maxPlayers = MaxPlayers + "";
             for (String rawScore : scores) {
-                String fScore = rawScore.replace("%PLAYERNAME%", playerName).replace("%PLAYERSONLINE%", playersOnline).replace("%MAXPLAYERS%", maxPlayers)
-                        .replace("%BALANCE%", balance).replace("%RANK%", rank);
+                String fScore = rawScore;
                 if (AutoSell) {
                     if (finalIsOn) {
                         fScore = fScore.replace("%ASMODE%", ASOn);
                     } else
                         fScore = fScore.replace("%ASMODE%", ASOff);
+                }
+                if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+                    try {
+                        fScore = PlaceholderAPI.setPlaceholders(p, fScore);
+                    } catch (Exception e) {
+                        if (!(e instanceof NullPointerException)) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
                 int index = scores.indexOf(rawScore);
                 board.getTeam(index + "").setPrefix(Utils.Format(fScore));
@@ -172,37 +182,28 @@ public class ScoreboardManager {
         });
     }
 
-    static String getRank(Player p) {
-        return Vault.getChat().getPlayerPrefix(p);
+
+
+    static void SetAutoSellOn(String text) {
+        ASOn = text;
     }
 
-    public static void SetPlayersOnline(int Amount){
-        PlayersOnline = Amount;
+    static void SetAutoSellOff(String text) {
+        ASOff = text;
     }
 
-    static void SetMaxPlayers(int Amount){
-        MaxPlayers = Amount;
+    static boolean AutoSellIsOn(Player p) {
+        return AutoSellMode.getApi().isOn(p);
     }
 
-    static void SetAutoSellOn(String text) { ASOn = text; }
 
-    static void SetAutoSellOff(String text) { ASOff = text; }
 
-    static boolean AutoSellIsOn(Player p) { return AutoSellMode.getApi().isOn(p); }
-
-    public static String GetBalance(Player p, double balance){
-        DecimalFormat df = new DecimalFormat("#.##");
-        return df.format(balance);
-    }
-
-    public static void Setup(){
+    public static void Setup() {
         players.clear();
         LastUsed.clear();
         QueuedUpdates.clear();
         List<String> lScores = Collections.synchronizedList(plugin.getConfig().getStringList("Scoreboard.Items"));
         Collections.reverse(lScores);
-        SetMaxPlayers(Bukkit.getMaxPlayers());
-        SetPlayersOnline(Bukkit.getOnlinePlayers().size());
         SetAutoSellOn(CustomScoreboards.getInstance().getConfig().getString("ASONMODE"));
         SetAutoSellOff(CustomScoreboards.getInstance().getConfig().getString("ASOFFMODE"));
         Delay = new AtomicInteger(CustomScoreboards.getInstance().getConfig().getInt("StartUpDelay"));
@@ -212,20 +213,19 @@ public class ScoreboardManager {
         scores = lScores;
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(CustomScoreboards.getInstance(), () -> {
-            for(Player p : Bukkit.getOnlinePlayers()){
-                Balances.put(p.getUniqueId(), GetBalance(p, Vault.getEconomy().getBalance(p)));
+            for (Player p : Bukkit.getOnlinePlayers()) {
                 createScoreboard(p, false);
             }
         }, Delay.get() * 20L);
     }
 
-    public static void reloadConfig(){
+    public static void reloadConfig() {
         plugin.reloadConfig();
         Setup();
     }
 
-    public static void scoreBoardUpdater(){
-        for(Player p : players){
+    public static void scoreBoardUpdater() {
+        for (Player p : players) {
             UpdateScoreboard(p, false);
         }
     }

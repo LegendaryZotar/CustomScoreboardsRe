@@ -3,12 +3,9 @@ ASOFFMODE: "&cOff"
 StartUpDelay: 10
 MinUpdateDelay: 250
 Scoreboard:
-  Title: "&aFutureRealms"
+  Title: "&aScoreboard"
   Items:
-    - "%PLAYERNAME%"
-    - "%PLAYERSONLINE%"
-    - "%MAXPLAYERS%"
-    - "%BALANCE%"
-    - "%INGAMETIME%"
-    - "%DAYORNIGHT%"
-    - "%RANK%"
+    - "This is your"
+    - "example scoreboard"
+    - "With placeholderapi"
+    - "&c&lsupport!"
