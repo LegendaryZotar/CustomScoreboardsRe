@@ -5,7 +5,7 @@ import me.legendaryzotar.customscoreboards.events.ModeToggleEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-public class playerModeToggle implements Listener {
+public class PlayerModeToggle implements Listener {
 
     @EventHandler
     void modeToggle(ModeToggleEvent e){

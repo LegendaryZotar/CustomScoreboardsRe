@@ -1,14 +1,15 @@
 package me.legendaryzotar.customscoreboards;
 
-import me.legendaryzotar.customscoreboards.commands.sc;
-import me.legendaryzotar.customscoreboards.commands.unistevenisawesome;
+import me.legendaryzotar.customscoreboards.commands.ScoreboardCommand;
+import me.legendaryzotar.customscoreboards.commands.UniStevenIsAwesomeCommand;
 import me.legendaryzotar.customscoreboards.customclasses.ScoreboardManager;
 import me.legendaryzotar.customscoreboards.listeners.*;
 import me.legendaryzotar.customscoreboards.other.Utils;
-import me.legendaryzotar.customscoreboards.other.Vault;
 import me.legendaryzotar.customscoreboards.other.versionchecking.VCPlayerJoin;
 import me.legendaryzotar.customscoreboards.other.versionchecking.VersionChecker;
-import me.legendaryzotar.customscoreboards.tabcompleters.scComp;
+import me.legendaryzotar.customscoreboards.tabcompleters.ScoreboardAutoComplete;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class CustomScoreboards extends JavaPlugin{
@@ -21,23 +22,26 @@ public class CustomScoreboards extends JavaPlugin{
 
         saveDefaultConfig();
         addMissingConfig();
-        Vault vault = new Vault(this);
 
         ScoreboardManager.Instance();
 
-        getCommand("sc").setExecutor(new sc());
-        getCommand("unistevenisawesome").setExecutor(new unistevenisawesome());
-        getCommand("sc").setTabCompleter(new scComp());
+        getCommand("sc").setExecutor(new ScoreboardCommand());
+        getCommand("unistevenisawesome").setExecutor(new UniStevenIsAwesomeCommand());
+        getCommand("sc").setTabCompleter(new ScoreboardAutoComplete());
 
-        getServer().getPluginManager().registerEvents(new playerJoin(), this);
-        getServer().getPluginManager().registerEvents(new playerLeave(), this);
-        getServer().getPluginManager().registerEvents(new balanceChange(), this);
+        getServer().getPluginManager().registerEvents(new PlayerJoin(), this);
+        getServer().getPluginManager().registerEvents(new PlayerLeave(), this);
         getServer().getPluginManager().registerEvents(new AutoSellToggle(), this);
         getServer().getPluginManager().registerEvents(new VCPlayerJoin(), this);
 
         getServer().getConsoleSender().sendMessage(Utils.Format("&aCustomScoreboards &e[" + getDescription().getVersion() + "]&a has been Enabled!"));
 
         VersionChecker.setup(this, "https://raw.githubusercontent.com/LegendaryZotar/LegendaryZotarVersions/master/minecraft-plugins/CustomScoreboards", new String[] {"sc.version", "sc.reloadconfig"});
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
+            for(Player p : Bukkit.getOnlinePlayers()){
+                ScoreboardManager.UpdateScoreboard(p, false);
+            }
+        }, 20, 20 * 2);// every 5 seconds it will refresh all scoreboards
     }
 
     public static CustomScoreboards getInstance(){

@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class scComp implements TabCompleter {
+public class ScoreboardAutoComplete implements TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] args) {
         if(sender instanceof Player){

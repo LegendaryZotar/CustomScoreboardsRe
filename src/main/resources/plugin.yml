@@ -1,7 +1,7 @@
 name: CustomScoreboards
-version: 2.4
+version: 2.5
 main: me.legendaryzotar.customscoreboards.CustomScoreboards
-depend: [Essentials, Vault]
+depend: [PlaceholderAPI]
 author: Legendary_zotar
 description: a plugin for custom scoreboards
 permissions:
